@@ -48,8 +48,8 @@ Functionalities are added in the course of iterations.
 - Shell prompt ([curr-dir] % ).
 - Separate process for commands, quit to exit.
 - 2 execution modes; interactive and bach.
-- Commands Parser.
-Modes:
+- Commands Parser.  
+Modes:  
 | Mode             | Usage                                                                |
 | ----------------- | ------------------------------------------------------------------ |
 | Interactive | {context: lmshell} <path> % [EXPRESSION] |
