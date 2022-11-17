@@ -1,1 +1,0 @@
-gcc -o refactored main.c complex.c 
