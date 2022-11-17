@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "stdio.h": "c",
+        "lm_modes.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "Disabled"
+}

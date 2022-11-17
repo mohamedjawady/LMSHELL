@@ -1,5 +1,19 @@
 #include <stdio.h>
+#include "lm_modes.h"
+int main(int argc, char** argv) {
+    lm_mode mode = parse_mode(argc);
+    
+    if(mode){
+        // INTERACTIVE MODE
+        lm_context ctx;
+        initialize_ctx(&ctx);
 
-int main() {
-    printf("Main program is still in progress");
+        while(strcmp(ctx.last_comm, "quit")){
+            // INTERACTIVE LOOP
+            printf("> Last command %s\n", lm_prompt(&ctx));
+        }
+    }else{
+        // BACH MODE
+        printf("BACH mode\n");
+    }
 }
