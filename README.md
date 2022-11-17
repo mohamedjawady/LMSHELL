@@ -49,13 +49,16 @@ Functionalities are added in the course of iterations.
 - Separate process for commands, quit to exit.
 - 2 execution modes; interactive and bach.
 - Commands Parser.  
+
 Modes:  
+
 | Mode             | Usage                                                                |
 | ----------------- | ------------------------------------------------------------------ |
 | Interactive | {context: lmshell} <path> % [EXPRESSION] |
 | Bach | lmshell file.lm |
 
 Expression Forms:
+
 | Expression             | Form                                                                |
 | ----------------- | ------------------------------------------------------------------ |
 | Simple | `cmd` |
