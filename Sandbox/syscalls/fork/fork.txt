@@ -1,0 +1,20 @@
+FORK(2)                                                              Linux Programmer's Manual                                                              FORK(2)
+
+NAME
+       fork - create a child process
+
+SYNOPSIS
+       #include <sys/types.h>
+       #include <unistd.h>
+
+       pid_t fork(void);
+
+DESCRIPTION
+       fork()  creates  a new process by duplicating the calling process.  The new process is referred to as the child process.  The calling process is referred to
+       as the parent process.
+
+VALUES
+       fork() = 0 for child process
+              <> for parent process
+
+unistd is included for pid_t and getpid(), getppid() declarations.
