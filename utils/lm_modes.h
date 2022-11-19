@@ -8,6 +8,7 @@
 
 #define MAX_CMD 255
 #define MAX_NAME 255
+
 typedef enum {
     LM_INTERACTIVE = 1,
     LM_BACH = 0
@@ -31,4 +32,4 @@ char* lm_prompt(lm_context* context);
 // Initialize context struct for interactive mode
 void initialize_ctx(lm_context* context);
 
-#endif LM_MODES
+#endif
