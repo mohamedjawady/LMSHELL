@@ -1,0 +1,9 @@
+DESCRIPTION
+       All of these system calls are used to wait for state changes in a child
+       of the calling process, and obtain information about  the  child  whose
+       state  has changed.  A state change is considered to be: the child ter‐
+       minated; the child was stopped by a signal; or the child was resumed by
+       a  signal.  In the case of a terminated child, performing a wait allows
+       the system to release the resources associated with  the  child;  if  a
+       wait  is not performed, then the terminated child remains in a "zombie"
+       state.
