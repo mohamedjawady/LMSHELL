@@ -1,0 +1,22 @@
+DESCRIPTION
+       The  exec() family of functions replaces the current process image with
+       a new process image.
+
+Note: Run make to compile different targets; execForeign is a foreign executable (its image will replace the execMain process)
+
+Example:
+./execMain 1 2 3
+
+OUTPUT:
+Original Process, PID: 7029
+Running with arguments:
+[0] ./execMain
+[1] 1
+[2] 2
+[3] 3
+Foreign executable, PID: 7029
+Running with arguments:
+[0] ./execForeign
+[1] 1
+[2] 2
+[3] 3
