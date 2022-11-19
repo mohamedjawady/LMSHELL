@@ -39,8 +39,8 @@ Build the project
 ## Progress  
 Every piece of functionality is separately tested in the Sandbox directory. Afterwards, progress is done in the root directory. 
 ### 1. Experimenting with
-- [H, M] C build tools
-- [F,E] Linux system calls
+- [H,M] C build tools
+- [F,E,W] Linux system calls
 
 ### 2. Implementation
 Functionalities are added in the course of iterations. 
