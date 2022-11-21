@@ -70,5 +70,4 @@ Expression Forms:
 ## Notes
 
 - Executable files within the "Sandbox" directory can be compiled seperately using a local compile.sh script
-
-
+- Not all commands are mapped to executables, some are built-ins, i.e. cd.
