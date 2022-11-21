@@ -1,5 +1,53 @@
 #include "lm_modes.h"
 
+char *builtin_repr[] = {
+    "cd",
+    "help",
+};
+
+int (*lm_builtins[])(char **, lm_context *) = {
+    &lm_cd,
+    &lm_help};
+
+int lm_bin_count()
+{
+    return sizeof(builtin_repr) / sizeof(char *);
+}
+
+int lm_cd(char **args, lm_context *context)
+{
+    if (args[1] == NULL)
+    {
+        perror("LMSHELL: cd - Argument not supplied\n");
+    }
+    else
+    {
+        if (chdir(args[1]) != 0)
+        {
+            // todo: handle errors
+            printf("%s supplied\n", args[1]);
+            perror("LMSHELL: cd - Cannot change directory\n");
+        }
+    }
+    char *cwd = (char *)malloc(1024);
+    getcwd(cwd, 1024);
+    context->curr_path = cwd;
+    return 1;
+}
+
+int lm_help(char **args, lm_context *context)
+{
+    int i;
+    printf("LMSHELL - Lightweight Linux Shell\n");
+    printf("Built-in commands:\n");
+
+    for (i = 0; i < lm_bin_count(); i++)
+    {
+        printf("  %s\n", builtin_repr[i]);
+    }
+    return 1;
+}
+
 int proc_start(char **argv)
 {
     pid_t pid, wpid;

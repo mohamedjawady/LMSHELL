@@ -11,12 +11,14 @@
 #define MAX_CMD 255
 #define MAX_NAME 255
 
+// mode type
 typedef enum
 {
     LM_INTERACTIVE = 1,
     LM_BACH = 0
 } lm_mode;
 
+// context type
 typedef struct
 {
     char *curr_path;
@@ -24,8 +26,17 @@ typedef struct
     unsigned l_com_status;
 } lm_context;
 
+// cd built_in
+int lm_cd(char **args, lm_context *context);
+
+// help built_in
+int lm_help(char **args, lm_context *context);
+
 // Exec a child process
 int proc_start(char **argv);
+
+// Count of built-in commmands
+int lm_bin_count();
 
 // Determine mode of execution given the count of arguments.
 lm_mode parse_mode(int argc);
