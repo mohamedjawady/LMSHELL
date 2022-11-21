@@ -10,16 +10,23 @@ int main(int argc, char **argv)
         lm_context ctx;
         initialize_ctx(&ctx);
 
-        // testing block start
-        char **testing = {"ls", ".", NULL};
-        int ret = proc_start(testing);
-        printf("%d\n", ret);
-        // testing block end
+        // testing block:help start
+        lm_help((char **)NULL, &ctx);
+        // testing block:help end
 
-        while (strcmp(ctx.last_comm, "quit"))
+        // testing block:cd start
+        char **cdArgs[][MAX_NAME] = {"cd", "./utils"};
+        lm_cd(cdArgs, &ctx);
+        // testing block:cd end
+
+        while (1)
         {
-            // INTERACTIVE LOOP
+            // REPL LOOP
             printf("> Last command %s\n", lm_prompt(&ctx));
+            if (!strcmp(ctx.last_comm, "quit"))
+            {
+                break;
+            }
         }
     }
     else
