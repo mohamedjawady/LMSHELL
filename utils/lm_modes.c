@@ -3,11 +3,13 @@
 char *builtin_repr[] = {
     "cd",
     "help",
+    "quit",
 };
 
 int (*lm_builtins[])(char **, lm_context *) = {
     &lm_cd,
-    &lm_help};
+    &lm_help,
+    &lm_quit};
 
 int lm_bin_count()
 {
@@ -24,15 +26,23 @@ int lm_cd(char **args, lm_context *context)
     {
         if (chdir(args[1]) != 0)
         {
-            // todo: handle errors
-            printf("%s supplied\n", args[1]);
-            perror("LMSHELL: cd - Cannot change directory\n");
+            perror(sprintf("LMSHELL: cd - Cannot change directory to %s\n", args[1]));
+        }
+        else
+        {
+            char *cwd = (char *)malloc(1024);
+            getcwd(cwd, 1024);
+            context->curr_path = cwd;
+            return 0;
         }
     }
-    char *cwd = (char *)malloc(1024);
-    getcwd(cwd, 1024);
-    context->curr_path = cwd;
     return 1;
+}
+
+int lm_quit(char **args, lm_context *context)
+{
+    exit(0);
+    return 0;
 }
 
 int lm_help(char **args, lm_context *context)
@@ -73,6 +83,7 @@ int proc_start(char **argv)
         {
             wpid = waitpid(pid, &status, WUNTRACED);
         } while (!WIFEXITED(status) && !WIFSIGNALED(status));
+        
     }
     return 1;
 }
@@ -90,7 +101,7 @@ char *read_line()
 {
     int buff_size = MAX_CMD;
     int position = 0;
-    char *buffer = malloc(sizeof(char) * buff_size);
+    char *buffer = (char *)malloc(sizeof(char *) * buff_size);
     handleAllocationError(buffer);
     int c;
     while (1)
@@ -147,6 +158,7 @@ void initialize_ctx(lm_context *context)
     getcwd(cwd, sizeof(cwd));
     context->curr_path = cwd;
     context->l_com_status = 0;
+    context->last_comm_op = LM_NONE;
     context->last_comm = "";
 }
 
@@ -154,11 +166,66 @@ char *lm_prompt(lm_context *context)
 {
     char *str_icmd = (char *)malloc(MAX_CMD);
     printf("[%s] %% ", context->curr_path);
-    context->last_comm = read_line();
+    char *input = read_line();
+    if (strcmp(input, ""))
+    {
+        context->last_comm = input;
+        if (strstr(context->last_comm, "&&"))
+        {
+            context->last_comm_op = LM_AND;
+        }
+        else if (strstr(context->last_comm, "||"))
+        {
+            context->last_comm_op = LM_OR;
+        }
+        else if (strstr(context->last_comm, "|"))
+        {
+            context->last_comm_op = LM_PIPE;
+        }
+        else if (strstr(context->last_comm, ";"))
+        {
+            context->last_comm_op = LM_IGN;
+        }
+        else
+        {
+            context->last_comm_op = LM_NONE;
+        }
+    }
+    else
+    {
+        context->last_comm = "";
+        context->last_comm_op = LM_NONE;
+    }
     return context->last_comm;
 }
 
 void lm_cleanup()
 {
     printf("LMSHELL: Exited\n");
+}
+
+void resetCtx(lm_context *context)
+{
+    context->last_comm = "";
+    context->last_comm_op = LM_NONE;
+    context->l_com_status = 0;
+}
+
+void lm_trim(char *string)
+{
+	int i,j;
+ 
+	for(i=0;string[i]==' '||string[i]=='\t';i++);
+		
+	for(j=0;string[i];i++)
+	{
+		string[j++]=string[i];
+	}
+	string[j]='\0';
+	for(i=0;string[i]!='\0';i++)
+	{
+		if(string[i]!=' '&& string[i]!='\t')
+				j=i;
+	}
+	string[j+1]='\0';
 }

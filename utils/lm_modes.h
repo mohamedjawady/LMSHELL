@@ -18,19 +18,36 @@ typedef enum
     LM_BACH = 0
 } lm_mode;
 
+// command operators
+typedef enum 
+{
+    LM_NONE,
+    LM_AND,
+    LM_OR,
+    LM_IGN, 
+    LM_PIPE
+} ops;
+
 // context type
 typedef struct
 {
     char *curr_path;
     char *last_comm;
+    ops last_comm_op;
     unsigned l_com_status;
+    char *last_sdout;
+    char *last_sterr;
 } lm_context;
+
 
 // cd built_in
 int lm_cd(char **args, lm_context *context);
 
 // help built_in
 int lm_help(char **args, lm_context *context);
+
+// quit built_in
+int lm_quit(char **args, lm_context *context);
 
 // Exec a child process
 int proc_start(char **argv);
@@ -56,4 +73,9 @@ char *read_line();
 // Exit and cleanup
 void lm_cleanup();
 
+// resets context
+void resetCtx(lm_context *context);
+
+// trims strings leading and terminating whitespace
+void lm_trim(char *string);
 #endif
