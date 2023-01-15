@@ -32,30 +32,41 @@ int main(int argc, char **argv)
             if (strcmp(ctx.last_comm, ""))
             {
                 char **array_string;
-                int i, size;
+                int size;
+                char **cmd1;
+                char **cmd2;
                 switch ((int)ctx.last_comm_op)
                 {
                 case LM_AND:
-                    printf("--Operator is AND\n");
+                    split_string_subs(ctx.last_comm, "&&", array_string);
+                    lm_trim(array_string[0]);
+                    string_split(array_string[0], ' ', &cmd1, &size);
+                    proc_start(cmd1, &ctx);
+                    lm_trim(array_string[1]);
+                    string_split(array_string[1], ' ', &cmd2, &size);
+                    proc_start_and_aware(cmd2, &ctx);
+
                     break;
                 case LM_OR:
-                    printf("--Operator is OR\n");
+                    split_string_subs(ctx.last_comm, "||", array_string);
+                    lm_trim(array_string[0]);
+                    string_split(array_string[0], ' ', &cmd1, &size);
+                    proc_start(cmd1, &ctx);
+                    lm_trim(array_string[1]);
+                    string_split(array_string[1], ' ', &cmd2, &size);
+                    proc_start_or_aware(cmd2, &ctx);
                     break;
                 case LM_PIPE:
                     printf("--Operator is PIPE\n");
                     break;
                 case LM_IGN:
-                    char **cmd1;
-                    char **cmd2;
-                    int size1;
-                    int size2;
                     string_split(ctx.last_comm, ';', &array_string, &size);
                     lm_trim(array_string[0]);
                     string_split(array_string[0], ' ', &cmd1, &size);
-                    proc_start(cmd1);
+                    proc_start(cmd1, &ctx);
                     lm_trim(array_string[1]);
                     string_split(array_string[1], ' ', &cmd2, &size);
-                    proc_start(cmd2);
+                    proc_start(cmd2, &ctx);
                     break;
                 case LM_NONE:
                     lm_trim(ctx.last_comm);
@@ -68,11 +79,13 @@ int main(int argc, char **argv)
                     }
                     else
                     {
-                        proc_start(array_string);
+                        proc_start(array_string, &ctx);
                     }
                     break;
                 }
             }
+            // debug 
+            // printf("Last command is %s, status %d\n", ctx.last_comm, ctx.l_com_status);
             lm_prompt(&ctx);
         }
     }
