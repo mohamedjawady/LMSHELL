@@ -34,7 +34,7 @@ typedef struct
     char *curr_path;
     char *last_comm;
     ops last_comm_op;
-    unsigned l_com_status;
+    int l_com_status;
     char *last_sdout;
     char *last_sterr;
 } lm_context;
@@ -50,7 +50,15 @@ int lm_help(char **args, lm_context *context);
 int lm_quit(char **args, lm_context *context);
 
 // Exec a child process
-int proc_start(char **argv);
+void proc_start(char **argv, lm_context *context);
+
+// Run second command if previous command ran succefully
+void proc_start_and_aware(char **argv, lm_context *context);
+
+// Run second command if previous command failed
+void proc_start_or_aware(char **argv, lm_context *context);
+
+
 
 // Count of built-in commmands
 int lm_bin_count();

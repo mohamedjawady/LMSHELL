@@ -1,13 +1,8 @@
 #include "parser.h"
 #include <stdlib.h>
 #include <unistd.h>
-tree_node* cr_lm_expr_tree(){
-    tree_node* root = (tree_node*)malloc(sizeof(tree_node));
-    root->n_type = LM_NSET;
-    root->n_value = NULL;
-    root->children = (tree_node*)NULL;
-    return root;
-}
+#include <string.h>
+
 
 void string_split(char * orig_string, char sep, char *** r_array_string, int * r_size) {
 	char* string = orig_string;
@@ -38,3 +33,18 @@ void string_split(char * orig_string, char sep, char *** r_array_string, int * r
 	return;
 }
 
+
+void split_string_subs(char* str, char* delimiter, char **subs){
+	char* token;
+	token = strtok(str, delimiter);
+	int i=0;
+	while(token != NULL, i<2) {
+		if(i==0){
+			subs[i] = token;
+		}else{
+			subs[i] = token;
+		}
+		token = strtok(NULL, delimiter);
+		i++;
+	}
+}

@@ -58,23 +58,24 @@ int lm_help(char **args, lm_context *context)
     return 1;
 }
 
-int proc_start(char **argv)
+void proc_start(char **argv, lm_context *context)
 {
     pid_t pid, wpid;
-    int status;
+    int status = -1;
 
     pid = fork();
     if (pid == 0)
     {
         if (execvp(argv[0], argv) == -1)
         {
-            perror("LMSHELL: Subprocess cannot start\n");
+            perror("LMSHELL: Command not found\n");
         }
         exit(EXIT_FAILURE);
     }
     else if (pid < 0)
     {
         perror("LMSHELL: Subprocess cannot be created\n");
+        
         exit(EXIT_FAILURE);
     }
     else
@@ -83,9 +84,20 @@ int proc_start(char **argv)
         {
             wpid = waitpid(pid, &status, WUNTRACED);
         } while (!WIFEXITED(status) && !WIFSIGNALED(status));
-        
     }
-    return 1;
+    context->l_com_status = status ;
+}
+
+void proc_start_and_aware(char **argv, lm_context *context){
+    if(context->l_com_status==0){
+        proc_start(argv, context);
+    }
+}
+
+void proc_start_or_aware(char **argv, lm_context *context){
+    if(context->l_com_status!=0){
+        proc_start(argv, context);
+    }
 }
 
 void handleAllocationError(void *buffer)
@@ -208,7 +220,7 @@ void resetCtx(lm_context *context)
 {
     context->last_comm = "";
     context->last_comm_op = LM_NONE;
-    context->l_com_status = 0;
+    
 }
 
 void lm_trim(char *string)
