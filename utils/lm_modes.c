@@ -1,16 +1,19 @@
 #include "lm_modes.h"
 #include "parser.h"
+#include "lm_file.h"
 
 char *builtin_repr[] = {
     "cd",
     "help",
     "quit",
-};
+    "history"};
 
 int (*lm_builtins[])(char **, lm_context *) = {
     &lm_cd,
     &lm_help,
-    &lm_quit};
+    &lm_quit,
+    &lm_history,
+};
 
 int lm_bin_count()
 {
@@ -53,6 +56,13 @@ int lm_cd(char **args, lm_context *context)
 int lm_quit(char **args, lm_context *context)
 {
     exit(0);
+    return 0;
+}
+
+int lm_history(char **args, lm_context *context)
+{
+    // todo: load config and set history path
+    open_file_lbl("/tmp/.lmhistory");
     return 0;
 }
 
@@ -319,6 +329,11 @@ void lm_command_wrapper_interactive(lm_context *ctx)
         else if (!strcmp(ctx->last_comm, "help"))
         {
             lm_help((char **)NULL, ctx);
+            resetCtx(ctx);
+            continue;
+        }else if (!strcmp(ctx->last_comm, "history"))
+        {
+            lm_history((char **)NULL, ctx);
             resetCtx(ctx);
             continue;
         }

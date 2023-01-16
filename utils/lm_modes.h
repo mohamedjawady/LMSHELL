@@ -51,6 +51,9 @@ int lm_help(char **args, lm_context *context);
 // quit built_in
 int lm_quit(char **args, lm_context *context);
 
+// history built_in
+int lm_history(char **args, lm_context *context);
+
 // Exec a child process
 void proc_start(char **argv, lm_context *context);
 
