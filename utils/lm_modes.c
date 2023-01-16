@@ -20,7 +20,17 @@ int lm_cd(char **args, lm_context *context)
 {
     if (args[1] == NULL)
     {
-        perror("LMSHELL: cd - Argument not supplied\n");
+        if (chdir("//") != 0)
+        {
+            perror("LMSHELL: cd - Cannot change directory to home\n");
+        }
+        else
+        {
+            char *cwd = (char *)malloc(1024);
+            getcwd(cwd, 1024);
+            context->curr_path = cwd;
+            return 0;
+        }
     }
     else
     {
