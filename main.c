@@ -10,7 +10,7 @@ int main(int argc, char **argv)
         // INTERACTIVE MODE
         lm_context *ctx = (lm_context*)malloc(sizeof(lm_context));
         initialize_ctx(ctx);
-        lm_command_wrapper(ctx);
+        lm_command_wrapper_interactive(ctx);
         lm_cleanup(ctx);
     }
     else

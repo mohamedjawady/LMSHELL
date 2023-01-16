@@ -213,6 +213,18 @@ char *lm_prompt(lm_context *context)
         {
             context->last_comm_op = LM_IGN;
         }
+        else if (strstr(context->last_comm, "#"))
+        {
+            context->last_comm_op = LM_COMMENT;
+        }
+        else if (strstr(context->last_comm, ">"))
+        {
+            context->last_comm_op = LM_REDIRECT;
+        }
+        else if (strstr(context->last_comm, ">>"))
+        {
+            context->last_comm_op = LM_APPEND;
+        }
         else
         {
             context->last_comm_op = LM_NONE;
@@ -294,7 +306,7 @@ void proc_start_pipe(char **cmd1, char **cmd2)
     wait(0);
 }
 
-void lm_command_wrapper(lm_context *ctx)
+void lm_command_wrapper_interactive(lm_context *ctx)
 {
     while (1)
     {

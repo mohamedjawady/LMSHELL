@@ -25,7 +25,10 @@ typedef enum
     LM_AND,
     LM_OR,
     LM_IGN,
-    LM_PIPE
+    LM_PIPE,
+    LM_COMMENT,
+    LM_REDIRECT,
+    LM_APPEND
 } ops;
 
 // context type
@@ -88,5 +91,5 @@ void resetCtx(lm_context *context);
 void lm_trim(char *string);
 
 // wraps prompt line execution
-void lm_command_wrapper(lm_context *ctx);
+void lm_command_wrapper_interactive(lm_context *ctx);
 #endif
