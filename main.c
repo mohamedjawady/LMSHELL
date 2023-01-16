@@ -57,7 +57,12 @@ int main(int argc, char **argv)
                     proc_start_or_aware(cmd2, &ctx);
                     break;
                 case LM_PIPE:
-                    printf("--Operator is PIPE\n");
+                    split_string_subs(ctx.last_comm, "|", array_string);
+                    lm_trim(array_string[0]);
+                    string_split(array_string[0], ' ', &cmd1, &size);
+                    lm_trim(array_string[1]);
+                    string_split(array_string[1], ' ', &cmd2, &size);
+                    proc_start_pipe(cmd1, cmd2);
                     break;
                 case LM_IGN:
                     string_split(ctx.last_comm, ';', &array_string, &size);
@@ -84,8 +89,6 @@ int main(int argc, char **argv)
                     break;
                 }
             }
-            // debug 
-            // printf("Last command is %s, status %d\n", ctx.last_comm, ctx.l_com_status);
             lm_prompt(&ctx);
         }
     }

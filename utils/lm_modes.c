@@ -85,7 +85,7 @@ void proc_start(char **argv, lm_context *context)
     else if (pid < 0)
     {
         perror("LMSHELL: Subprocess cannot be created\n");
-        
+
         exit(EXIT_FAILURE);
     }
     else
@@ -95,17 +95,21 @@ void proc_start(char **argv, lm_context *context)
             wpid = waitpid(pid, &status, WUNTRACED);
         } while (!WIFEXITED(status) && !WIFSIGNALED(status));
     }
-    context->l_com_status = status ;
+    context->l_com_status = status;
 }
 
-void proc_start_and_aware(char **argv, lm_context *context){
-    if(context->l_com_status==0){
+void proc_start_and_aware(char **argv, lm_context *context)
+{
+    if (context->l_com_status == 0)
+    {
         proc_start(argv, context);
     }
 }
 
-void proc_start_or_aware(char **argv, lm_context *context){
-    if(context->l_com_status!=0){
+void proc_start_or_aware(char **argv, lm_context *context)
+{
+    if (context->l_com_status != 0)
+    {
         proc_start(argv, context);
     }
 }
@@ -230,24 +234,60 @@ void resetCtx(lm_context *context)
 {
     context->last_comm = "";
     context->last_comm_op = LM_NONE;
-    
 }
 
 void lm_trim(char *string)
 {
-	int i,j;
- 
-	for(i=0;string[i]==' '||string[i]=='\t';i++);
-		
-	for(j=0;string[i];i++)
-	{
-		string[j++]=string[i];
-	}
-	string[j]='\0';
-	for(i=0;string[i]!='\0';i++)
-	{
-		if(string[i]!=' '&& string[i]!='\t')
-				j=i;
-	}
-	string[j+1]='\0';
+    int i, j;
+
+    for (i = 0; string[i] == ' ' || string[i] == '\t'; i++)
+        ;
+
+    for (j = 0; string[i]; i++)
+    {
+        string[j++] = string[i];
+    }
+    string[j] = '\0';
+    for (i = 0; string[i] != '\0'; i++)
+    {
+        if (string[i] != ' ' && string[i] != '\t')
+            j = i;
+    }
+    string[j + 1] = '\0';
+}
+
+void proc_start_pipe(char **cmd1, char **cmd2)
+{
+    int fd[2];
+    if (pipe(fd) == -1)
+    {
+        perror("LMSHELL: Pipe Error");
+        exit(1);
+    }
+
+    if (fork() == 0)
+    {
+        close(STDOUT_FILENO);
+        dup(fd[1]);
+        close(fd[0]);
+        close(fd[1]);
+        execvp(cmd1[0], cmd1);
+        perror("LMSHELL: Execvp Error");
+        exit(1);
+    }
+    if (fork() == 0)
+    {
+        close(STDIN_FILENO);
+        dup(fd[0]);
+        close(fd[1]);
+        close(fd[0]);
+        execvp(cmd2[0], cmd2);
+        perror("LMSHELL: Execvp Error");
+        exit(1);
+    }
+
+    close(fd[0]);
+    close(fd[1]);
+    wait(0);
+    wait(0);
 }

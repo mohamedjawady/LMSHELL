@@ -19,12 +19,12 @@ typedef enum
 } lm_mode;
 
 // command operators
-typedef enum 
+typedef enum
 {
     LM_NONE,
     LM_AND,
     LM_OR,
-    LM_IGN, 
+    LM_IGN,
     LM_PIPE
 } ops;
 
@@ -38,7 +38,6 @@ typedef struct
     char *last_sdout;
     char *last_sterr;
 } lm_context;
-
 
 // cd built_in
 int lm_cd(char **args, lm_context *context);
@@ -58,7 +57,8 @@ void proc_start_and_aware(char **argv, lm_context *context);
 // Run second command if previous command failed
 void proc_start_or_aware(char **argv, lm_context *context);
 
-
+// Run two commands separated by pipe
+void proc_start_pipe(char **cmd1, char **cmd2);
 
 // Count of built-in commmands
 int lm_bin_count();
