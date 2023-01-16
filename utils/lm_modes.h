@@ -79,11 +79,14 @@ void initialize_ctx(lm_context *context);
 char *read_line();
 
 // Exit and cleanup
-void lm_cleanup();
+void lm_cleanup(lm_context *context);
 
 // resets context
 void resetCtx(lm_context *context);
 
 // trims strings leading and terminating whitespace
 void lm_trim(char *string);
+
+// wraps prompt line execution
+void lm_command_wrapper(lm_context *ctx);
 #endif
