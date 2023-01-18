@@ -303,7 +303,7 @@ char *lm_virt_prompt(lm_context *context, char *line)
         context->last_comm = "";
         context->last_comm_op = LM_NONE;
     }
-    printf("Last command operator %d\n", context->last_comm_op);
+    
     return context->last_comm;
 }
 
@@ -558,7 +558,7 @@ void lm_command_wrapper_batch(lm_context *ctx, char *filename)
                 int size;
                 char **cmd1 = (char **)malloc(MAX_CMD);
                 char **cmd2 = (char **)malloc(MAX_CMD);
-                //printf("Last operator %d", (int)ctx->last_comm_op);
+                
                 switch ((int)ctx->last_comm_op)
                 {
                 case LM_AND:
