@@ -20,6 +20,16 @@ int lm_bin_count()
     return sizeof(builtin_repr) / sizeof(char *);
 }
 
+void handleAllocationError(void *buffer)
+{
+    if (!buffer)
+    {
+        perror("LMSHELL: Allocation Error\n");
+        exit(EXIT_FAILURE);
+    }
+}
+
+
 int lm_cd(char **args, lm_context *context)
 {
     if (args[1] == NULL)
@@ -31,6 +41,7 @@ int lm_cd(char **args, lm_context *context)
         else
         {
             char *cwd = (char *)malloc(1024);
+            handleAllocationError(cwd);
             getcwd(cwd, 1024);
             context->curr_path = cwd;
             return 0;
@@ -45,6 +56,7 @@ int lm_cd(char **args, lm_context *context)
         else
         {
             char *cwd = (char *)malloc(1024);
+            handleAllocationError(cwd);
             getcwd(cwd, 1024);
             context->curr_path = cwd;
             return 0;
@@ -125,14 +137,6 @@ void proc_start_or_aware(char **argv, lm_context *context)
     }
 }
 
-void handleAllocationError(void *buffer)
-{
-    if (!buffer)
-    {
-        perror("LMSHELL: Allocation Error\n");
-        exit(EXIT_FAILURE);
-    }
-}
 
 char *read_line()
 {
@@ -202,6 +206,7 @@ void initialize_ctx(lm_context *context)
 char *lm_prompt(lm_context *context)
 {
     char *str_icmd = (char *)malloc(MAX_CMD);
+    handleAllocationError(str_icmd);
     printf("[%s] %% ", context->curr_path);
     char *input = read_line();
     if (strcmp(input, ""))
@@ -230,6 +235,10 @@ char *lm_prompt(lm_context *context)
         else if (strstr(context->last_comm, ">"))
         {
             context->last_comm_op = LM_REDIRECT;
+        }
+        else if (strstr(context->last_comm, ">>"))
+        {
+            context->last_comm_op = LM_APPEND;
         }
         else if (strstr(context->last_comm, ">>"))
         {
@@ -341,13 +350,13 @@ void proc_start_redirect(char **cmd1, char **cmd2)
         fstream = fopen(cmd2[0], "w+");
         if (fstream == NULL)
         {
-            printf("failed to open file");
+            perror("LMSHELL:failed to open file");
         }
         freopen(cmd2[0], "w", stdout);
         if (execvp(cmd1[0], cmd1) < 0)
         {
-            redirect_flag = 1; // execvp this redirect command failed
-        }                      // if
+            perror("failed to open file");
+        }
         printf("ran successfully");
         fclose(stdout);
         fclose(fstream);
@@ -427,6 +436,9 @@ void lm_command_wrapper_interactive(lm_context *ctx)
                 lm_trim(array_string[1]);
                 string_split(array_string[1], ' ', &cmd2, &size);
                 proc_start_redirect(cmd1, cmd2);
+                break;
+            case LM_COMMENT:
+                // do nothing
                 break;
             case LM_NONE:
                 lm_trim(ctx->last_comm);
