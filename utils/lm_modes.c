@@ -29,7 +29,6 @@ void handleAllocationError(void *buffer)
     }
 }
 
-
 int lm_cd(char **args, lm_context *context)
 {
     if (args[1] == NULL)
@@ -137,7 +136,6 @@ void proc_start_or_aware(char **argv, lm_context *context)
     }
 }
 
-
 char *read_line()
 {
     int buff_size = MAX_CMD;
@@ -212,6 +210,7 @@ char *lm_prompt(lm_context *context)
     if (strcmp(input, ""))
     {
         context->last_comm = input;
+        add_to_file("/tmp/.lmhistory", input);
         if (strstr(context->last_comm, "&&"))
         {
             context->last_comm_op = LM_AND;

@@ -27,3 +27,19 @@ void open_file_lbl(char *filename)
             free(line);
     }
 }
+
+void add_to_file(char *fname, char *line)
+{
+    FILE *pFile;
+
+    pFile = fopen(fname, "a");
+    if (pFile == NULL)
+    {
+        perror("LMSHELL: Error opening file.");
+    }
+    else
+    {
+        fprintf(pFile, "%s\n", line);
+    }
+    fclose(pFile);
+}

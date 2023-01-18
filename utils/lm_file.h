@@ -4,4 +4,6 @@
 // open file and read from it line by line
 void open_file_lbl(char *filename);
 
+// append string to end of text file
+void add_to_file(char *fname, char *line);
 #endif
