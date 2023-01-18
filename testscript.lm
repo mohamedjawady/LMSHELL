@@ -1,23 +1,3 @@
-# This is a script to test functionality
-
-# test single command
-pwd
-
-# test and operator
-pwd && ls
-
-# test or operator
-pwd || ls
-
-# test newline separator
-pwd;ls
-
-# test pipe operator
-ls purge.sh | wc -b
-
-# test redirect operator
-cat purge.sh > testout.txt
-
-# test append operator
-
-echo 123 >> testout.txt
+ls
+ls
+echo hello > test.txt
