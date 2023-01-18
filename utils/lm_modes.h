@@ -10,7 +10,7 @@
 #ifndef LM_MODES
 #define LM_MODES
 
-#define MAX_CMD 255
+#define MAX_CMD 1024
 #define MAX_NAME 255
 
 // mode type
@@ -83,6 +83,9 @@ char *print_mode(lm_mode mode);
 // Construct str_path and display prompt
 char *lm_prompt(lm_context *context);
 
+// lm_prompt simulation for batch mode 
+char *lm_virt_prompt(lm_context *context, char *line);
+
 // Initialize context struct for interactive mode
 void initialize_ctx(lm_context *context);
 
@@ -100,4 +103,7 @@ void lm_trim(char *string);
 
 // wraps prompt line execution
 void lm_command_wrapper_interactive(lm_context *ctx);
+
+// wraps batch mode
+void lm_command_wrapper_batch(lm_context *ctx, char *filename);
 #endif

@@ -94,20 +94,19 @@ void proc_start(char **argv, lm_context *context)
 {
     pid_t pid, wpid;
     int status = -1;
-
     pid = fork();
     if (pid == 0)
     {
-        if (execvp(argv[0], argv) == -1)
+        if (execvp(argv[0], argv) < 0)
         {
-            perror("LMSHELL: Command not found\n");
+            printf("encountered %s\n", argv[0]);
+            perror("LMSHELL: Command not found ");
+            exit(EXIT_FAILURE);
         }
-        exit(EXIT_FAILURE);
     }
     else if (pid < 0)
     {
         perror("LMSHELL: Subprocess cannot be created\n");
-
         exit(EXIT_FAILURE);
     }
     else
@@ -256,10 +255,61 @@ char *lm_prompt(lm_context *context)
     return context->last_comm;
 }
 
+char *lm_virt_prompt(lm_context *context, char *line)
+{
+    resetCtx(context);
+    char *str_icmd = (char *)malloc(MAX_CMD);
+    handleAllocationError(str_icmd);
+    if (strcmp(line, ""))
+    {
+        context->last_comm = line;
+        add_to_file("/tmp/.lmhistory", line);
+        if (strstr(line, "&&"))
+        {
+            context->last_comm_op = LM_AND;
+        }
+        else if (strstr(line, "||"))
+        {
+            context->last_comm_op = LM_OR;
+        }
+        else if (strstr(line, "|"))
+        {
+            context->last_comm_op = LM_PIPE;
+        }
+        else if (strstr(line, ";"))
+        {
+            context->last_comm_op = LM_IGN;
+        }
+        else if (strstr(line, "#"))
+        {
+            context->last_comm_op = LM_COMMENT;
+        }
+        else if (strstr(line, ">"))
+        {
+            context->last_comm_op = LM_REDIRECT;
+        }
+        else if (strstr(line, ">>"))
+        {
+            context->last_comm_op = LM_APPEND;
+        }
+        else if (strstr(line, ">>"))
+        {
+            context->last_comm_op = LM_APPEND;
+        }
+        
+    }
+    else
+    {
+        context->last_comm = "";
+        context->last_comm_op = LM_NONE;
+    }
+    printf("Last command operator %d\n", context->last_comm_op);
+    return context->last_comm;
+}
+
 void lm_cleanup(lm_context *context)
 {
     free(context);
-    printf("LMSHELL: Exited\n");
 }
 
 void resetCtx(lm_context *context)
@@ -388,8 +438,8 @@ void lm_command_wrapper_interactive(lm_context *ctx)
         {
             char **array_string;
             int size;
-            char **cmd1;
-            char **cmd2;
+            char **cmd1 = (char **)malloc(MAX_CMD);
+            char **cmd2 = (char **)malloc(MAX_CMD);
             switch ((int)ctx->last_comm_op)
             {
             case LM_AND:
@@ -454,7 +504,135 @@ void lm_command_wrapper_interactive(lm_context *ctx)
                 }
                 break;
             }
+            free(cmd1);
+            free(cmd2);
         }
         lm_prompt(ctx);
+    }
+}
+
+void lm_command_wrapper_batch(lm_context *ctx, char *filename)
+{
+
+    FILE *script;
+    char line[MAX_CMD];
+    size_t len = 0;
+    char* read;
+    int i = 1;
+    script = fopen(filename, "r");
+    if (script == NULL)
+    {
+        perror("LMSHELL: Failed to open script file");
+    }
+    else
+    {
+        while (fgets(line, MAX_CMD, script) != NULL)
+        {
+            resetCtx(ctx);
+            line[strcspn(line, "\n")] = 0;
+            lm_virt_prompt(ctx, line);
+            
+            //printf("inputted %s at lvl wrapper", line);
+            
+            if (!strcmp(line, "quit"))
+            {
+                lm_quit((char **)NULL, ctx);
+                //resetCtx(ctx);
+                continue;
+            }
+            else if (!strcmp(line, "help"))
+            {
+                lm_help((char **)NULL, ctx);
+                //resetCtx(ctx);
+                continue;
+            }
+            else if (!strcmp(line, "history"))
+            {
+                lm_history((char **)NULL, ctx);
+                //resetCtx(ctx);
+                continue;
+            }
+            if (strcmp(line, ""))
+            {
+                char **array_string;
+                int size;
+                char **cmd1 = (char **)malloc(MAX_CMD);
+                char **cmd2 = (char **)malloc(MAX_CMD);
+                //printf("Last operator %d", (int)ctx->last_comm_op);
+                switch ((int)ctx->last_comm_op)
+                {
+                case LM_AND:
+                    split_string_subs(line, "&&", array_string);
+                    lm_trim(array_string[0]);
+                    string_split(array_string[0], ' ', &cmd1, &size);
+                    proc_start(cmd1, ctx);
+                    lm_trim(array_string[1]);
+                    string_split(array_string[1], ' ', &cmd2, &size);
+                    proc_start_and_aware(cmd2, ctx);
+                    break;
+                case LM_OR:
+                    split_string_subs(line, "||", array_string);
+                    lm_trim(array_string[0]);
+                    string_split(array_string[0], ' ', &cmd1, &size);
+                    proc_start(cmd1, ctx);
+                    lm_trim(array_string[1]);
+                    string_split(array_string[1], ' ', &cmd2, &size);
+                    proc_start_or_aware(cmd2, ctx);
+                    break;
+                case LM_PIPE:
+                    split_string_subs(line, "|", array_string);
+                    lm_trim(array_string[0]);
+                    string_split(array_string[0], ' ', &cmd1, &size);
+                    lm_trim(array_string[1]);
+                    string_split(array_string[1], ' ', &cmd2, &size);
+                    proc_start_pipe(cmd1, cmd2);
+                    break;
+                case LM_IGN:
+                    string_split(line, ';', &array_string, &size);
+                    lm_trim(array_string[0]);
+                    string_split(array_string[0], ' ', &cmd1, &size);
+                    proc_start(cmd1, ctx);
+                    lm_trim(array_string[1]);
+                    string_split(array_string[1], ' ', &cmd2, &size);
+                    proc_start(cmd2, ctx);
+                    break;
+                case LM_REDIRECT:
+                    // cmd 2 is used here to store the redirect target at cmd2[0]
+                    string_split(line, '>', &array_string, &size);
+                    lm_trim(array_string[0]);
+                    string_split(array_string[0], ' ', &cmd1, &size);
+                    lm_trim(array_string[1]);
+                    string_split(array_string[1], ' ', &cmd2, &size);
+                    proc_start_redirect(cmd1, cmd2);
+                    break;
+                case LM_COMMENT:
+                    // do nothing
+                    break;
+                case LM_NONE:
+                    lm_trim(line);
+                    string_split(line, ' ', &array_string, &size);
+                    if (!strcmp(array_string[0], "cd"))
+                    {
+                        lm_cd(array_string, ctx);
+                        //resetCtx(ctx);
+                        continue;
+                    }
+                    else
+                    {
+                        proc_start(array_string, ctx);
+                    }
+                    break;
+                }
+                
+                free(cmd1);
+                free(cmd2);
+            }
+            
+            i++;
+        }
+
+        fclose(script);
+        //if (line)
+        //    free(line);
     }
 }

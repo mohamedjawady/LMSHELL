@@ -16,7 +16,10 @@ int main(int argc, char **argv)
     else
     {
         // BACH MODE
-        printf("BACH mode\n");
+        lm_context *ctx = (lm_context*)malloc(sizeof(lm_context));
+        initialize_ctx(ctx);
+        lm_command_wrapper_batch(ctx, argv[1]);
+        lm_cleanup(ctx);
     }
     
 }
