@@ -4,6 +4,8 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 
 #ifndef LM_MODES
 #define LM_MODES
@@ -65,6 +67,9 @@ void proc_start_or_aware(char **argv, lm_context *context);
 
 // Run two commands separated by pipe
 void proc_start_pipe(char **cmd1, char **cmd2);
+
+// Redirect Stdout of cmd1 to cmd2[0]
+void proc_start_redirect(char **cmd1, char **cmd2);
 
 // Count of built-in commmands
 int lm_bin_count();

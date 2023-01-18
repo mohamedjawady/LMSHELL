@@ -315,6 +315,44 @@ void proc_start_pipe(char **cmd1, char **cmd2)
     wait(0);
     wait(0);
 }
+void proc_start_redirect(char **cmd1, char **cmd2)
+{
+    // todo, remove file workaround
+    pid_t pid = fork();
+    if (pid == -1)
+    {
+        perror("LMSHELL: Fork failed\n");
+    }
+    else if (pid == 0)
+    {
+        int f;
+
+        if ((f = creat(cmd2[0], S_IRUSR | S_IWUSR)) < 0)
+            perror("creat() error");
+        else
+        {
+            write(f, "", strlen(""));
+            close(f);
+            unlink(cmd2[0]);
+        }
+
+        int redirect_flag = 0;
+        FILE *fstream;
+        fstream = fopen(cmd2[0], "w+");
+        if (fstream == NULL)
+        {
+            printf("failed to open file");
+        }
+        freopen(cmd2[0], "w", stdout);
+        if (execvp(cmd1[0], cmd1) < 0)
+        {
+            redirect_flag = 1; // execvp this redirect command failed
+        }                      // if
+        printf("ran successfully");
+        fclose(stdout);
+        fclose(fstream);
+    }
+}
 
 void lm_command_wrapper_interactive(lm_context *ctx)
 {
@@ -331,7 +369,8 @@ void lm_command_wrapper_interactive(lm_context *ctx)
             lm_help((char **)NULL, ctx);
             resetCtx(ctx);
             continue;
-        }else if (!strcmp(ctx->last_comm, "history"))
+        }
+        else if (!strcmp(ctx->last_comm, "history"))
         {
             lm_history((char **)NULL, ctx);
             resetCtx(ctx);
@@ -379,6 +418,15 @@ void lm_command_wrapper_interactive(lm_context *ctx)
                 lm_trim(array_string[1]);
                 string_split(array_string[1], ' ', &cmd2, &size);
                 proc_start(cmd2, ctx);
+                break;
+            case LM_REDIRECT:
+                // cmd 2 is used here to store the redirect target at cmd2[0]
+                split_string_subs(ctx->last_comm, ">", array_string);
+                lm_trim(array_string[0]);
+                string_split(array_string[0], ' ', &cmd1, &size);
+                lm_trim(array_string[1]);
+                string_split(array_string[1], ' ', &cmd2, &size);
+                proc_start_redirect(cmd1, cmd2);
                 break;
             case LM_NONE:
                 lm_trim(ctx->last_comm);
