@@ -1,5 +1,4 @@
 #include "lm_wrappers.h"
-
 void lm_command_wrapper_interactive(lm_context *ctx)
 {
     while (1)

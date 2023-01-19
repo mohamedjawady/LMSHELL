@@ -8,6 +8,11 @@
 #include <sys/stat.h>
 #include "lm_modes.h"
 #include "constants.h"
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 #ifndef LM_PROCESS
 #define LM_PROCESS
