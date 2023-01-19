@@ -1,5 +1,5 @@
-#include "lm_modes.h"
-#include "lm_wrappers.h"
+#include "utils/lm_modes.h"
+#include "utils/lm_wrappers.h"
 
 int main(int argc, char **argv)
 {
