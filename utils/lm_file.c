@@ -1,7 +1,4 @@
 #include "lm_file.h"
-#include <stdlib.h>
-#include <stdio.h>
-
 void open_file_lbl(char *filename)
 {
     FILE *fp;
@@ -43,3 +40,4 @@ void add_to_file(char *fname, char *line)
     }
     fclose(pFile);
 }
+

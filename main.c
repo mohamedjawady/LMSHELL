@@ -1,6 +1,5 @@
-#include <stdio.h>
-#include <signal.h>
 #include "lm_modes.h"
+#include "lm_wrappers.h"
 
 int main(int argc, char **argv)
 {

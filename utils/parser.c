@@ -48,3 +48,24 @@ void split_string_subs(char* str, char* delimiter, char **subs){
 		i++;
 	}
 }
+
+
+void lm_trim(char *string)
+{
+    int i, j;
+
+    for (i = 0; string[i] == ' ' || string[i] == '\t'; i++)
+        ;
+
+    for (j = 0; string[i]; i++)
+    {
+        string[j++] = string[i];
+    }
+    string[j] = '\0';
+    for (i = 0; string[i] != '\0'; i++)
+    {
+        if (string[i] != ' ' && string[i] != '\t')
+            j = i;
+    }
+    string[j + 1] = '\0';
+}

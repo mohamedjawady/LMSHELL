@@ -1,3 +1,6 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <stddef.h>
 #ifndef LM_FILE
 #define LM_file
 
@@ -6,4 +9,5 @@ void open_file_lbl(char *filename);
 
 // append string to end of text file
 void add_to_file(char *fname, char *line);
+
 #endif
