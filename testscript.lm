@@ -1,0 +1,4 @@
+#!/usr/bin/lmshell
+ls
+pwd
+cat hbib
