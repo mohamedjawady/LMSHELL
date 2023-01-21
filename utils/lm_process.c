@@ -9,7 +9,7 @@ void proc_start(char **argv, lm_context *context)
     {
         if (execvp(argv[0], argv) < 0)
         {
-            printf("encountered %s\n", argv[0]);
+            // dbg printf("encountered %s\n", argv[0]);
             perror("LMSHELL: Command not found ");
             exit(EXIT_FAILURE);
         }
